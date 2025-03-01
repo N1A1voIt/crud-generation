@@ -1,0 +1,31 @@
+java:
+    model:
+      content: |
+        import jakarta.persistence.*;
+        import lombok.Getter;
+        import lombok.Setter;
+        
+        @Setter
+        @Getter
+        @Entity
+        @Table(name="${tableName}")
+        public class ${modelName} {
+          {{#fields}}
+            {{#if keyType == "PK"}}
+              @Id
+              @GeneratedValue(strategy=GenerationType.IDENTITY)
+              @Column(name="${attributeName}")
+              private ${databaseType} ${attributeName};
+            {{/if}}
+        
+            {{#if keyType == "FK"}}
+              @Column(name="${attributeName}")
+              private ${databaseType} ${attributeName};
+            {{/if}}
+          
+            {{#if keyType == "Normal"}}
+              @Column(name="${attributeName}")
+              private ${databaseType} ${attributeName};
+            {{/if}}
+          {{/fields}}
+        }
