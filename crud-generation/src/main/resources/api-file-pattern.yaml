@@ -1,6 +1,7 @@
 java:
     model:
       content: |
+        package ${group}.${tableName};
         import jakarta.persistence.*;
         import lombok.Getter;
         import lombok.Setter;
@@ -10,22 +11,137 @@ java:
         @Entity
         @Table(name="${tableName}")
         public class ${modelName} {
-          {{#fields}}
-            {{#if keyType == "PK"}}
-              @Id
-              @GeneratedValue(strategy=GenerationType.IDENTITY)
-              @Column(name="${attributeName}")
-              private ${databaseType} ${attributeName};
-            {{/if}}
+        <#list fields as field>
+        <#if field.keyType == "PK">
+          @Id
+          @GeneratedValue(strategy=GenerationType.IDENTITY)
+          @Column(name="${field.attributeName}")
+          private ${field.variableType} ${field.variableName};
+        </#if>
         
-            {{#if keyType == "FK"}}
-              @Column(name="${attributeName}")
-              private ${databaseType} ${attributeName};
-            {{/if}}
-          
-            {{#if keyType == "Normal"}}
-              @Column(name="${attributeName}")
-              private ${databaseType} ${attributeName};
-            {{/if}}
-          {{/fields}}
+        <#if field.keyType == "FK">
+          @Column(name="${field.attributeName}")
+          private ${field.variableType} ${field.variableName};
+        </#if>
+        
+        <#if field.keyType == "Normal">
+          @Column(name="${field.attributeName}")
+          private ${field.variableType} ${field.variableName};
+          </#if>
+        </#list>
+      }
+    repository:
+      content: |
+        package ${group}.${tableName};
+        import org.springframework.data.jpa.repository.JpaRepository;
+        import org.springframework.stereotype.Repository;
+        
+        @Repository
+        public interface ${modelName}Repository extends JpaRepository<${modelName}, Long> {
         }
+    service:
+      content: |
+        package ${group}.service;
+
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.stereotype.Service;
+        
+        import java.util.List;
+        import java.util.Optional;
+        
+        /**
+        * Service class for ${modelName}.
+        */
+        @Service
+        public class ${modelName}Service {
+        
+        private final ${modelName}Repository ${modelNameLower}Repository;
+        
+        @Autowired
+        public ${modelName}Service(${modelName}Repository ${modelNameLower}Repository) {
+        this.${modelNameLower}Repository = ${modelNameLower}Repository;
+        }
+        
+        // Save or Update an entity
+        public ${modelName} save${modelName}(${modelName} ${modelNameLower}) {
+        return ${modelNameLower}Repository.save(${modelNameLower});
+        }
+        
+        // Find an entity by its ID
+        public Optional<V${modelName}> findById(Long id) {
+        return ${modelNameLower}Repository.findById(id);
+        }
+        
+        // Get all entities
+        public List<V${modelName}> findAll() {
+        return ${modelNameLower}Repository.findAll();
+        }
+        
+        // Delete an entity by its ID
+        public void deleteById(Long id) {
+        ${modelNameLower}Repository.deleteById(id);
+        }
+        
+        // Custom service methods can go here
+        // Example: Find by some field
+        <#-- Example -->
+        // public Optional<${modelName}> findBy${fieldName}(${fieldType} ${fieldName}) {
+        //     return ${modelNameLower}Repository.findBy${fieldName}(${fieldName});
+        // }
+        }
+    controller:
+      content: |
+        package ${group}.controller;
+        
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.web.bind.annotation.*;
+        
+        import java.util.List;
+        import java.util.Optional;
+        
+        /**
+         * Controller class for ${modelName}.
+         */
+        @RestController
+        @RequestMapping("/api/${modelNameLower}")
+        public class ${modelName}Controller {
+        
+            private final ${modelName}Service ${modelNameLower}Service;
+        
+            @Autowired
+            public ${modelName}Controller(${modelName}Service ${modelNameLower}Service) {
+                this.${modelNameLower}Service = ${modelNameLower}Service;
+            }
+        
+            // Get all ${modelName}s
+            @GetMapping
+            public List<V${modelName}> getAll${modelName}s() {
+                return ${modelNameLower}Service.findAll();
+            }
+        
+            // Get a specific ${modelName} by ID
+            @GetMapping("/{id}")
+            public Optional<V${modelName}> get${modelName}ById(@PathVariable Long id) {
+                return ${modelNameLower}Service.findById(id);
+            }
+        
+            // Create or update a ${modelName}
+            @PostMapping
+            public ${modelName} save${modelName}(@RequestBody ${modelName} ${modelNameLower}) {
+                return ${modelNameLower}Service.save${modelName}(${modelNameLower});
+            }
+        
+            // Delete a ${modelName} by ID
+            @DeleteMapping("/{id}")
+            public void delete${modelName}(@PathVariable Long id) {
+                ${modelNameLower}Service.deleteById(id);
+            }
+        
+            // Example of custom controller methods can go here
+            <#-- Example -->
+            // @GetMapping("/findBy${fieldName}")
+            // public Optional<${modelName}> findBy${fieldName}(@RequestParam ${fieldType} ${fieldName}) {
+            //     return ${modelNameLower}Service.findBy${fieldName}(${fieldName});
+            // }
+        }
+

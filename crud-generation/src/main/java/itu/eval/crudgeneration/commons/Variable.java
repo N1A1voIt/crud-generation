@@ -11,4 +11,6 @@ public class Variable {
     private String attributeName;
     private String refTable;
     private String refColumn;
+    private String variableName;
+    private String variableType;
 }
