@@ -9,5 +9,6 @@ public class Variable {
     private String databaseType;
     private String keyType;
     private String attributeName;
-    private Object value;
+    private String refTable;
+    private String refColumn;
 }

@@ -8,6 +8,6 @@ import java.sql.DatabaseMetaData;
 import java.util.List;
 
 public interface TablesAttributeProvider {
-    MTable provideAttributes(MTable table, DatabaseMetaData databaseMetaData);
-    List<Variable> provideVariables(MTable table, DatabaseMetaData databaseMetaData);
+    MTable provideAttributes(MTable table, DatabaseMetaData databaseMetaData) throws Exception;
+    List<Variable> provideVariables(MTable table, DatabaseMetaData databaseMetaData) throws Exception;
 }

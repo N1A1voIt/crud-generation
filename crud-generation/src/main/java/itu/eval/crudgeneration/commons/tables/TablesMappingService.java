@@ -7,16 +7,18 @@ import org.springframework.stereotype.Service;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 @Service
 public class TablesMappingService implements TablesMappingSignature{
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private TablesAttProvidersService tableElementsProvider;
 
     @Override
-    public HashMap<String, MTable> provideTablesMetadata() throws SQLException {
+    public HashMap<String, MTable> provideTablesMetadata() throws Exception {
+        TablesAttributeProvider tablesAttributeProvider = tableElementsProvider;
         DatabaseMetaData metaData = jdbcTemplate.getDataSource().getConnection().getMetaData();
         ResultSet resultSet = metaData.getTables(null, null, null, new String[]{"TABLE"});
         HashMap<String , MTable> tabMapping = new HashMap<>();
@@ -24,8 +26,7 @@ public class TablesMappingService implements TablesMappingSignature{
             String tableName = resultSet.getString("TABLE_NAME");
             MTable tableDescriptor = new MTable();
             tableDescriptor.setTable(tableName);
-            ResultSet columnResultSet = metaData.getColumns(null, null, tableName, null);
-            tableDescriptor.setVariables(tableElements(columnResultSet,metaData,tableName));
+            tableDescriptor.setVariables(tablesAttributeProvider.provideVariables(tableDescriptor,metaData));
             tabMapping.put(tableName,tableDescriptor);
         }
         return tabMapping;

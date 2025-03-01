@@ -10,6 +10,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -17,13 +18,13 @@ public class ForeignKeyProvider {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public List<ForeignKey> getForeignKeys(MTable table) throws Exception {
+    public HashMap<String,ForeignKey> getForeignKeys(MTable table) throws Exception {
             DatabaseMetaData metaData = jdbcTemplate.getDataSource().getConnection().getMetaData();
             return presentsForeignKeys(metaData,table.getTable());
     }
 
-    private List<ForeignKey> presentsForeignKeys(DatabaseMetaData metaData,String tabName) throws SQLException {
-        List<ForeignKey> fks = new ArrayList<>();
+    private HashMap<String,ForeignKey> presentsForeignKeys(DatabaseMetaData metaData, String tabName) throws SQLException {
+        HashMap<String,ForeignKey> fks = new HashMap<>();
         ResultSet foreignKeys = metaData.getImportedKeys(null,null,tabName);
         while (foreignKeys.next()){
             String colName = foreignKeys.getString("FKCOLUMN_NAME");
@@ -31,7 +32,7 @@ public class ForeignKeyProvider {
             ForeignKey fkTableRef = new ForeignKey();
             fkTableRef.setColumnName(colName);
             fkTableRef.setTableRef(referencedTableName);
-            fks.add(fkTableRef);
+            fks.put(colName,fkTableRef);
         }
         return fks;
     }

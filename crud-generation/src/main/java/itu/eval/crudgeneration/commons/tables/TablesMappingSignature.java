@@ -6,5 +6,5 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 public interface TablesMappingSignature {
-    HashMap<String , MTable> provideTablesMetadata() throws SQLException;
+    HashMap<String , MTable> provideTablesMetadata() throws SQLException, Exception;
 }
