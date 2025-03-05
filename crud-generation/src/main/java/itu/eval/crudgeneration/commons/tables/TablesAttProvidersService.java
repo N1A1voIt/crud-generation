@@ -31,7 +31,7 @@ public class TablesAttProvidersService implements TablesAttributeProvider{
     @Override
     public List<Variable> provideVariables(MTable table, DatabaseMetaData databaseMetaData) throws Exception{
         List<Variable> variables = new ArrayList<>();
-        HashMap<String,ForeignKey> foreignKeys = foreignKeyProvider.getForeignKeys(table);
+        HashMap<String,ForeignKey> foreignKeys = foreignKeyProvider.getForeignKeys(table,databaseMetaData);
         ResultSet columnResultSet = databaseMetaData.getColumns(null, null, table.getTable(), null);
         String pk = pkFinder.pkColumnName(databaseMetaData, table.getTable());
         while (columnResultSet.next()) {

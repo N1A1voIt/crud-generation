@@ -14,7 +14,6 @@ public class CentralizedGeneration {
     ServiceGenerator serviceGenerator;
     @Autowired
     ControllerGenerator controllerGenerator;
-    @Autowired
     ClassGenerationSignature classGenerationSignature;
 
     public String[] generate(MTable mTable) throws Exception {
@@ -27,6 +26,10 @@ public class CentralizedGeneration {
         a[2] = classGenerationSignature.getClass(mTable);
         classGenerationSignature = serviceGenerator;
         a[3] = classGenerationSignature.getClass(mTable);
+        System.out.println(a[0]);
+        System.out.println(a[1]);
+        System.out.println(a[2]);
+        System.out.println(a[3]);
         return a;
     }
 }

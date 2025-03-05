@@ -18,8 +18,8 @@ public class ForeignKeyProvider {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public HashMap<String,ForeignKey> getForeignKeys(MTable table) throws Exception {
-            DatabaseMetaData metaData = jdbcTemplate.getDataSource().getConnection().getMetaData();
+    public HashMap<String,ForeignKey> getForeignKeys(MTable table,DatabaseMetaData metaData) throws Exception {
+//            DatabaseMetaData metaData = jdbcTemplate.getDataSource().getConnection().getMetaData();
             return presentsForeignKeys(metaData,table.getTable());
     }
 
