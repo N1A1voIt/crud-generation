@@ -42,13 +42,14 @@ public class TablesAttProvidersService implements TablesAttributeProvider{
             variable.setVariableName(attributeNameToVariablename(columnName));
             variable.setDatabaseType(typeName);
             variable.setVariableType(JsonTypeProvider.getTypeMap("java").get(typeName));
+
+            if (pk.equals(columnName)) variable.setKeyType("PK");
+            else variable.setKeyType("Normal");
             if (foreignKeys.containsKey(columnName)) {
                 variable.setKeyType("FK");
                 variable.setRefTable(foreignKeys.get(columnName).getTableRef());
                 variable.setRefColumn(pkFinder.pkColumnName(databaseMetaData,foreignKeys.get(columnName).getTableRef()));
             }
-            if (pk.equals(columnName)) variable.setKeyType("PK");
-            else variable.setKeyType("Normal");
             variables.add(variable);
         }
         return variables;
