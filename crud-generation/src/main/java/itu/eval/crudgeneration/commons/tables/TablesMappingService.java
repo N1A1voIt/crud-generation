@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Service
 public class TablesMappingService implements TablesMappingSignature{
@@ -20,15 +23,29 @@ public class TablesMappingService implements TablesMappingSignature{
     public HashMap<String, MTable> provideTablesMetadata() throws Exception {
         TablesAttributeProvider tablesAttributeProvider = tableElementsProvider;
         DatabaseMetaData metaData = jdbcTemplate.getDataSource().getConnection().getMetaData();
-        ResultSet resultSet = metaData.getTables(null, null, null, new String[]{"TABLE"});
-        HashMap<String , MTable> tabMapping = new HashMap<>();
-        while (resultSet.next()) {
-            String tableName = resultSet.getString("TABLE_NAME");
-            MTable tableDescriptor = new MTable();
-            tableDescriptor.setTable(tableName);
-            tableDescriptor.setVariables(tablesAttributeProvider.provideVariables(tableDescriptor,metaData));
-            tabMapping.put(tableName,tableDescriptor);
+        try (ResultSet resultSet = metaData.getTables(null, null, null, new String[]{"TABLE"})) {
+            HashMap<String, MTable> tabMapping = new HashMap<>();  // Preserve insertion order
+
+            while (resultSet.next()) {
+                String tableName = resultSet.getString("TABLE_NAME");
+
+                MTable tableDescriptor = new MTable();
+                tableDescriptor.setTable(tableName);
+
+                // Consider limiting metadata calls for performance
+                tableDescriptor.setVariables(tablesAttributeProvider.provideVariables(
+                        tableDescriptor,
+                        metaData
+                ));
+
+                tabMapping.put(tableName.toLowerCase(), tableDescriptor);  // Case-insensitive key
+            }
+            System.out.println("Hello!!!");
+
+            return tabMapping;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error processing database metadata", e);
         }
-        return tabMapping;
+//        return tabMapping;
     }
 }

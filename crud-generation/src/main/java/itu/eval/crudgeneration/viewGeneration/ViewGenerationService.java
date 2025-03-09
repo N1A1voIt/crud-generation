@@ -4,6 +4,9 @@ import itu.eval.crudgeneration.commons.MTable;
 import itu.eval.crudgeneration.commons.Variable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,6 +27,26 @@ public class ViewGenerationService implements ViewGenerationSignatures{
         String view = "CREATE VIEW v_"+mTable.getTable()+" AS "+query;
         return view;
     }
+
+    @Override
+    public MTable generateViewClass(MTable mTable,DatabaseMetaData databaseMetaData) throws Exception {
+        String query = generateQuery(mTable,mTable.getCriteria());
+        persistView(databaseMetaData,query);
+
+        return null;
+    }
+
+    @Override
+    public void persistView(DatabaseMetaData databaseMetaData,String query) throws Exception {
+        if (query == null || query.isEmpty()) {
+            throw new IllegalArgumentException("No query generated to persist.");
+        }
+        Connection connection = databaseMetaData.getConnection();
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(query);
+        System.out.println("View created successfully.");
+    }
+
     private String getAttribute(MTable mTable,ViewCriteria viewCriteria) {
         String s = "";
         String tab = mTable.getTable();

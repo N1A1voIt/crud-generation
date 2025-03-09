@@ -1,0 +1,116 @@
+java:
+  model:
+    content: |
+      package ${group}.${tableName}.model;
+      import jakarta.persistence.*;
+      import lombok.Getter;
+      import lombok.Setter;
+      
+      @Setter
+      @Getter
+      @Entity
+      @Table(name="${tableName}")
+      public class ${modelName} {
+          <#list fields as field>
+          <#if field.keyType == "PK">
+          @Id
+          @GeneratedValue(strategy=GenerationType.IDENTITY)
+          @Column(name="${field.attributeName}")
+          private ${field.variableType} ${field.variableName};
+          </#if>
+      
+          <#if field.keyType == "FK">
+          @Column(name="${field.attributeName}")
+          private ${field.variableType} ${field.variableName};
+          </#if>
+      
+          <#if field.keyType == "Normal">
+          @Column(name="${field.attributeName}")
+          private ${field.variableType} ${field.variableName};
+          </#if>
+          </#list>
+      }  # Proper indentation
+  repository:
+    content: |
+      package ${group}.${tableName}.services;
+      import org.springframework.data.jpa.repository.JpaRepository;
+      import ${group}.${tableName}.model.*;
+      import org.springframework.stereotype.Repository;
+      
+      @Repository
+      public interface ${modelName}Repository extends JpaRepository<${modelName}, Long> {
+      }  # Proper closing
+  service:
+    content: |
+      package ${group}.${tableName}.services;
+      import org.springframework.beans.factory.annotation.Autowired;
+      import org.springframework.stereotype.Service;
+      import ${group}.${tableName}.model.*;
+      import java.util.List;
+      import java.util.Optional;
+      
+      @Service
+      public class ${modelName}Service {
+          private final ${modelName}Repository ${modelNameLower}Repository;
+      
+          @Autowired
+          public ${modelName}Service(${modelName}Repository ${modelNameLower}Repository) {
+              this.${modelNameLower}Repository = ${modelNameLower}Repository;
+          }
+      
+          public ${modelName} save${modelName}(${modelName} ${modelNameLower}) {
+              return ${modelNameLower}Repository.save(${modelNameLower});
+          }
+      
+          public Optional<${modelName}> findById(Long id) {  # Fixed missing < bracket
+              return ${modelNameLower}Repository.findById(id);
+          }
+      
+          public List<${modelName}> findAll() {
+              return ${modelNameLower}Repository.findAll();
+          }
+      
+          public void deleteById(Long id) {
+              ${modelNameLower}Repository.deleteById(id);
+          }
+      }  # Proper indentation
+  controller:
+    content: |
+      package ${group}.${tableName}.controller;
+      import org.springframework.beans.factory.annotation.Autowired;
+      import org.springframework.web.bind.annotation.*;
+      import ${group}.${tableName}.services.*;
+      import ${group}.${tableName}.model.*;
+      import java.util.List;
+      import java.util.Optional;
+      
+      @RestController
+      @RequestMapping("/api/${modelNameLower}")
+      public class ${modelName}Controller {
+          private final ${modelName}Service ${modelNameLower}Service;
+      
+          @Autowired
+          public ${modelName}Controller(${modelName}Service ${modelNameLower}Service) {
+              this.${modelNameLower}Service = ${modelNameLower}Service;
+          }
+      
+          @GetMapping
+          public List<${modelName}> getAll${modelName}s() {
+              return ${modelNameLower}Service.findAll();
+          }
+      
+          @GetMapping("/{id}")
+          public Optional<${modelName}> get${modelName}ById(@PathVariable Long id) {
+              return ${modelNameLower}Service.findById(id);
+          }
+      
+          @PostMapping
+          public ${modelName} save${modelName}(@RequestBody ${modelName} ${modelNameLower}) {
+              return ${modelNameLower}Service.save${modelName}(${modelNameLower});
+          }
+      
+          @DeleteMapping("/{id}")
+          public void delete${modelName}(@PathVariable Long id) {
+              ${modelNameLower}Service.deleteById(id);
+          }
+      }  # Proper closing
