@@ -18,7 +18,7 @@ public class YamlProvider {
         InputStream inputStream = new ClassPathResource("api-file-pattern.yaml").getInputStream();
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> obj = yaml.load(inputStream);
-        Map<String, Object> javaConfig = (Map<String, Object>) obj.get("java");
+        Map<String, Object> javaConfig = (Map<String, Object>) obj.get("nestjs");
         return objectMapper.convertValue(javaConfig, ApiFilePattern.class);
     }
 }

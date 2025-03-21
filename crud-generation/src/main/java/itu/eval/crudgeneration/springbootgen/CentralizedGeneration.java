@@ -41,6 +41,7 @@ public class CentralizedGeneration {
         a[1] = classGenerationSignature.getClass(mTable);
         classGenerationSignature = controllerGenerator;
         a[2] = classGenerationSignature.getClass(mTable);
+        System.out.println(a[2]);
         classGenerationSignature = serviceGenerator;
         a[3] = classGenerationSignature.getClass(mTable);
 //        System.out.println(a[0]);

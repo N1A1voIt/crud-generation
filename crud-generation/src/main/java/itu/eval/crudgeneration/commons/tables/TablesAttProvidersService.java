@@ -41,7 +41,7 @@ public class TablesAttProvidersService implements TablesAttributeProvider{
             variable.setAttributeName(columnName);
             variable.setVariableName(attributeNameToVariablename(columnName));
             variable.setDatabaseType(typeName);
-            variable.setVariableType(JsonTypeProvider.getTypeMap("java").get(typeName));
+            variable.setVariableType(JsonTypeProvider.getTypeMap("typescript").get(typeName));
 
             if (pk.equals(columnName)) variable.setKeyType("PK");
             else variable.setKeyType("Normal");

@@ -114,3 +114,93 @@ java:
               ${modelNameLower}Service.deleteById(id);
           }
       }  # Proper closing
+nestjs:
+  model:
+    content: |
+      // ${modelName}.entity.ts
+      import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+
+      @Entity({ name: '${tableName}' })
+      export class ${modelName} {
+        <#list fields as field>
+        <#if field.keyType == "PK">
+        @PrimaryGeneratedColumn()
+        ${field.variableName}: ${field.variableType};
+        </#if>
+
+        <#if field.keyType == "FK" || field.keyType == "Normal">
+        @Column({ name: '${field.attributeName}' })
+        ${field.variableName}: ${field.variableType};
+        </#if>
+        </#list>
+      }
+  repository:
+    content: |
+      // ${modelName}.repository.ts
+      import { EntityRepository, Repository } from 'typeorm';
+      import { ${modelName} } from './${modelName}.entity';
+
+      @EntityRepository(${modelName})
+      export class ${modelName}Repository extends Repository<${modelName}> {}
+  service:
+    content: |
+      // ${modelName}.service.ts
+      import { Injectable } from '@nestjs/common';
+      import { InjectRepository } from '@nestjs/typeorm';
+      import { Repository } from 'typeorm';
+      import { ${modelName} } from './${modelName}.entity';
+
+      @Injectable()
+      export class ${modelName}Service {
+        constructor(
+          @InjectRepository(${modelName})
+          private readonly ${modelNameLower}Repository: Repository<${modelName}>,
+        ) {}
+
+        async save${modelName}(${modelNameLower}: ${modelName}): Promise<${modelName}> {
+          return this.${modelNameLower}Repository.save(${modelNameLower});
+        }
+
+        async findById(id: number): Promise<${modelName}> {
+          return this.${modelNameLower}Repository.findOne(id);
+        }
+
+        async findAll(): Promise<${modelName}[]> {
+          return this.${modelNameLower}Repository.find();
+        }
+
+        async deleteById(id: number): Promise<void> {
+          await this.${modelNameLower}Repository.delete(id);
+        }
+      }
+  controller:
+    content: |
+      // ${modelName}.controller.ts
+      import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
+      import { ${modelName}Service } from './${modelName}.service';
+      import { ${modelName} } from './${modelName}.entity';
+
+      @Controller('${modelNameLower}')
+      export class ${modelName}Controller {
+        constructor(private readonly ${modelNameLower}Service: ${modelName}Service) {}
+
+        @Get()
+        async getAll${modelName}s(): Promise<${modelName}[]> {
+          return this.${modelNameLower}Service.findAll();
+        }
+
+        @Get(':id')
+        async get${modelName}ById(@Param('id') id: number): Promise<${modelName}> {
+          return this.${modelNameLower}Service.findById(id);
+        }
+
+        @Post()
+        async save${modelName}(@Body() ${modelNameLower}: ${modelName}): Promise<${modelName}> {
+          return this.${modelNameLower}Service.save${modelName}(${modelNameLower});
+        }
+
+        @Delete(':id')
+        async delete${modelName}(@Param('id') id: number): Promise<void> {
+          return this.${modelNameLower}Service.deleteById(id);
+        }
+      }
