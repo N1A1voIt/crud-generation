@@ -36,7 +36,8 @@
       "inet": "java.net.InetAddress",
       "cidr": "java.net.InetAddress",
       "macaddr": "String",
-      "xml": "String"
+      "xml": "String",
+      "blob": "byte[]"
     },
   "typescript": {
     "int2": "number",
@@ -58,9 +59,10 @@
     "double precision": "number",
     "decimal": "number",
     "numeric": "number",
-    "date": "string",
-    "timestamp without time zone": "string",
-    "timestamp": "string",
+    "date": "Date",
+    "datetime": "Date",
+    "timestamp without time zone": "Date",
+    "timestamp": "Date",
     "bool": "boolean",
     "time": "string",
     "tsrange": "string",
@@ -74,6 +76,7 @@
     "inet": "string",
     "cidr": "string",
     "macaddr": "string",
-    "xml": "string"
+    "xml": "string",
+    "blob": "Buffer"
   }
 }
